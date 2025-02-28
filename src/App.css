@@ -1,0 +1,152 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.cart-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: bold;
+}
+
+.list {
+  list-style-type: none;
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  padding: 0;
+  border-top: 2px solid grey;
+  border-bottom: 2px solid grey;
+}
+
+.tab-item {
+  /* background-color: yellow; */
+  width: 10rem;
+  height: 2.4rem;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected {
+  color: orange;
+  border-bottom: 2px solid orange;
+  font-weight: bold;
+}
+
+.foodlist {
+  list-style-type: none;
+  padding: 0 10px;
+}
+
+.list-item-for-dish-name {
+  border: 2px solid grey;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+}
+
+.left-box {
+  display: flex;
+}
+
+.square-outline-veg {
+  border: 1px solid green;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.square-outline-nonveg {
+  border: 1px solid red;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+}
+
+.circle-interior-nonveg {
+  background-color: red;
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+}
+
+.circle-interior-veg {
+  background-color: green;
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+}
+
+.calorie-with-img {
+  display: flex;
+}
+
+.calorie-with-img > p {
+  align-self: center;
+  margin-right: 10rem;
+  color: orange;
+  font-weight: bold;
+}
+
+@media (max-width: 425px) {
+  .calorie-with-img > p {
+    margin-right: 0;
+  }
+}
+
+.dish-name {
+  margin: 0;
+  font-weight: bold;
+}
+
+.button-container {
+  background-color: green;
+  width: 80px;
+  height: 30px;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  padding: 0 8px;
+}
+
+.button-container > button {
+  background: transparent;
+  border: 0;
+  color: white;
+}
+
+.blue-text {
+  color: blue;
+}
+
+.red-text {
+  color: red;
+}
