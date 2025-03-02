@@ -1,146 +1,99 @@
-import './App.css'
 import {Component} from 'react'
-import Header from './components/Header/Header'
-import Tabs from './components/Tabs/Tabs'
-import FoodListItem from './components/FoodListItem/FoodListItem'
+import {Switch, Route} from 'react-router-dom'
+import Home from './components/Home/Home'
+import Login from './components/Login/Login'
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
+import Cart from './components/Cart/Cart'
+import CartContext from './CartContext/CartContext'
 
 class App extends Component {
-  state = {
-    categoryOfFood: [],
-    categorySelected: '',
-    finalData: [],
-    cartList: [],
-    isLoading: true,
-    restaurantName: '',
+  state = {cartList: []}
+
+  handleCart = updatedCart => {
+    this.setState({cartList: updatedCart})
   }
 
-  async componentDidMount() {
-    const response = await fetch(
-      'https://apis2.ccbp.in/restaurant-app/restaurant-menu-list-details',
-    )
-    const data = await response.json()
+  removeAllCartItems = () => {
+    this.setState({cartList: []})
+  }
 
-    // console.log(data)
+  addCartItem = (image, dishName, price, quantity) => {
+    const {cartList} = this.state
 
-    if (data.length > 0) {
-      const menuCategories = data[0].table_menu_list.map(
-        obj => obj.menu_category,
+    const idx = cartList.find(obj => obj.dishName === dishName)
+
+    // if the data exists
+    if (idx !== undefined) {
+      console.log(image, dishName, price, quantity)
+      const updatedCart = cartList.map(obj =>
+        obj.dishName === dishName
+          ? {...obj, quantity: obj.quantity + quantity}
+          : obj,
       )
-
-      this.setState({
-        finalData: data[0].table_menu_list,
-        categoryOfFood: menuCategories,
-        categorySelected: menuCategories[0], // default category
-        isLoading: false,
-        restaurantName: data[0].restaurant_name,
-      })
+      this.setState({cartList: updatedCart})
+    }
+    // if the data doesnt exists
+    else {
+      this.setState(prevState => ({
+        cartList: [...prevState.cartList, {image, dishName, price, quantity}],
+      }))
     }
   }
 
-  handleTabChange = newTab => {
-    this.setState({categorySelected: newTab})
+  removeCartItem = dishName => {
+    const {cartList} = this.state
+
+    const updatedCart = cartList.filter(item => item.dishName !== dishName)
+
+    this.setState({cartList: updatedCart})
   }
 
-  handleCartItemIncrement = dish => {
-    this.setState(prevState => {
-      const {cartList} = prevState
-      const itemIndex = cartList.findIndex(item => item.dishId === dish.dish_id)
+  decrementCartItemQuantity = dishName => {
+    const {cartList} = this.state
 
-      if (itemIndex !== -1) {
-        // Update existing item quantity
-        const updatedCart = cartList.map(item =>
-          item.dishId === dish.dish_id
-            ? {...item, dishQuantity: item.dishQuantity + 1}
-            : item,
-        )
+    const updatedCart = cartList
+      .map(item =>
+        item.dishName === dishName
+          ? {...item, quantity: item.quantity - 1}
+          : item,
+      )
+      .filter(item => item.quantity !== 0)
 
-        return {cartList: updatedCart}
-      }
-      // Add new item
-      return {
-        cartList: [...cartList, {dishId: dish.dish_id, dishQuantity: 1}],
-      }
-    })
+    this.setState({cartList: updatedCart})
   }
 
-  handleCartItemDecrement = dish => {
-    this.setState(prevState => {
-      const {cartList} = prevState
-      const updatedCart = cartList
-        .map(item =>
-          item.dishId === dish.dish_id
-            ? {...item, dishQuantity: item.dishQuantity - 1}
-            : item,
-        )
-        .filter(item => item.dishQuantity > 0) // Remove items with 0 quantity
+  incrementCartItemQuantity = dishName => {
+    const {cartList} = this.state
 
-      return {cartList: updatedCart}
-    })
+    const updatedCart = cartList.map(item =>
+      item.dishName === dishName
+        ? {...item, quantity: item.quantity + 1}
+        : item,
+    )
+    this.setState({cartList: updatedCart})
   }
 
   render() {
-    const {
-      categoryOfFood,
-      categorySelected,
-      finalData,
-      cartList,
-      isLoading,
-      restaurantName,
-    } = this.state
-
-    const filteredData = finalData.find(
-      data => data.menu_category === categorySelected,
-    )
-    const dishes = filteredData ? filteredData.category_dishes : []
-
-    console.log(restaurantName)
+    const {cartList} = this.state
 
     return (
-      <div>
-        {isLoading ? (
-          <p>LOADING...</p>
-        ) : (
-          <>
-            <Header restaurantName={restaurantName} cartList={cartList} />
-            <ul className="list">
-              {categoryOfFood.map(category => (
-                <li key={category}>
-                  <button
-                    key={category}
-                    className={
-                      categorySelected === category ? 'selected' : 'unSelected'
-                    }
-                    onClick={() => this.handleTabChange(category)}
-                  >
-                    {category}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
+      <CartContext.Provider
+        value={{
+          cartList,
 
-        {dishes.length > 0 && (
-          <ul className="foodlist">
-            {dishes.map(dish => {
-              const dishInCart = cartList.find(
-                obj => obj.dishId === dish.dish_id,
-              )
-              const dishQuantity = dishInCart ? dishInCart.dishQuantity : 0
-
-              return (
-                <FoodListItem
-                  key={dish.dish_id}
-                  el={dish}
-                  quantity={dishQuantity}
-                  handleCartItemIncrement={this.handleCartItemIncrement}
-                  handleCartItemDecrement={this.handleCartItemDecrement}
-                />
-              )
-            })}
-          </ul>
-        )}
-      </div>
+          removeAllCartItems: this.removeAllCartItems,
+          addCartItem: this.addCartItem,
+          removeCartItem: this.removeCartItem,
+          incrementCartItemQuantity: this.incrementCartItemQuantity,
+          decrementCartItemQuantity: this.decrementCartItemQuantity,
+        }}
+      >
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <ProtectedRoute exact path="/" component={Home} />
+          <ProtectedRoute exact path="/cart" component={Cart} />
+        </Switch>
+      </CartContext.Provider>
     )
   }
 }

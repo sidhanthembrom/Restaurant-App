@@ -1,25 +1,39 @@
 import {Component} from 'react'
 
 class FoodListItem extends Component {
+  state = {count: 0}
+
   handleDecrement = () => {
     const {handleCartItemDecrement, quantity} = this.props
+    const {count} = this.state
 
-    if (quantity >= 1) {
+    if (count >= 1) {
       const {el} = this.props
-      handleCartItemDecrement(el)
+      // handleCartItemDecrement(el)
+      this.setState(prevState => ({count: prevState.count - 1}))
     }
   }
 
   handleIncrement = () => {
     const {handleCartItemIncrement, el} = this.props
-    handleCartItemIncrement(el)
+    // handleCartItemIncrement(el)
+
+    this.setState(prevState => ({
+      count: prevState.count + 1,
+    }))
+  }
+
+  handleAddCartItemEvent = () => {
+    const {el, addCartItem} = this.props
+    const {count} = this.state
+    // console.log(el)
+    addCartItem(el.dish_image, el.dish_name, el.dish_price, count)
   }
 
   render() {
     const {el, quantity} = this.props
-    // if (el !== undefined) {
-    //   console.log(el.dish_calories)
-    // }
+
+    const {count} = this.state
 
     return (
       <li className="list-item-for-dish-name">
@@ -47,10 +61,17 @@ class FoodListItem extends Component {
             </p>
             <p>{el.dish_description}</p>
             {el.dish_Availability ? (
-              <div className="button-container">
-                <button onClick={this.handleDecrement}>-</button>
-                <p>{quantity}</p>
-                <button onClick={this.handleIncrement}>+</button>
+              <div>
+                <div className="button-container">
+                  <button onClick={this.handleDecrement}>-</button>
+                  <p>{count}</p>
+                  <button onClick={this.handleIncrement}>+</button>
+                </div>
+                {count > 0 ? (
+                  <button onClick={this.handleAddCartItemEvent}>
+                    ADD TO CART
+                  </button>
+                ) : null}
               </div>
             ) : (
               <p className="red-text">Not available</p>
